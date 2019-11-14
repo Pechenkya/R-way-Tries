@@ -1,6 +1,5 @@
 ﻿#include <iostream>
 #include <vector>
-#include <string>
 #include "RwayTrie.h"
 
 class A
@@ -15,7 +14,7 @@ public:
 		std::cout << "A created" << std::endl;
 	};
 
-	A& operator=(A& obj)
+	A& operator=(const A& obj)
 	{
 		this->data = obj.data;
 		this->name = obj.name;
@@ -31,12 +30,12 @@ public:
 		return *this;
 	};
 
-	A(A&& obj) : data{ obj.data }, name{ obj.name }, d{ obj.d } 
+	A(A&& obj) : data{ obj.data }, name{ obj.name }, d{ obj.d }
 	{
 		std::cout << "A moved" << std::endl;
 	};
 
-	A(A& obj) : data{ obj.data }, name{ obj.name }, d{ obj.d }
+	A(const A& obj) : data{ obj.data }, name{ obj.name }, d{ obj.d }
 	{
 		std::cout << "A copyed" << std::endl;
 	};
@@ -46,11 +45,22 @@ public:
 
 int main()
 {
-	RwayTrie<A> new_tries;
+	//RwayTrie<int, 8, std::vector<int>> new_trie;
+	//std::vector<int> key1 = { 1, 5, 3, 5 };
+	//new_trie.put(key1, 5);
+	//new_trie.put(key1, 23);
+
+	//std::vector <int> values = new_trie.get_value(key1);
+	//for (auto t : values)
+	//{
+	//	std::cout << t << " ";
+	//}
+
+	RwayTrie<A, 256, std::string> new_tries;
 	A dick(2, "dick chaney");
 	new_tries.put("dog", dick);
-	std::cout << new_tries.get_value("dog").data << " " << new_tries.get_value("dog").name << std::endl;
+	//std::vector<A> new_str = new_tries.get_value("dog");
+	//std::cout << new_str[0].data << " " << new_str[0].name << std::endl;
+	std::cout << new_tries.get_value("dog")[0].data << " " << new_tries.get_value("dog")[0].name << std::endl;
 	new_tries.put("door", A(4, "short"));
-	std::cout << new_tries.get_value("door").data << " " << new_tries.get_value("door").name << std::endl;
-
 }
