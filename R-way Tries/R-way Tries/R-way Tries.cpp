@@ -58,9 +58,12 @@ int main()
 
 	RwayTrie<A, 256, std::string> new_tries;
 	A dick(2, "dick chaney");
-	new_tries.put("dog", dick);
+	new_tries.put("dogaaaaa", dick);
 	//std::vector<A> new_str = new_tries.get_value("dog");
 	//std::cout << new_str[0].data << " " << new_str[0].name << std::endl;
-	std::cout << new_tries.get_value("dog")[0].data << " " << new_tries.get_value("dog")[0].name << std::endl;
+	std::cout << new_tries.get_value("dogaaaaa")[0].data << " " << new_tries.get_value("dogaaaaa")[0].name << std::endl;
 	new_tries.put("door", A(4, "short"));
+
+	new_tries.remove_value("dogaaaaa");
+	
 }

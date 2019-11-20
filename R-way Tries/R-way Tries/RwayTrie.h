@@ -17,11 +17,13 @@ class RwayTrie
 	void put(Node* &node, Container key, N&& value, int d = 0);
 
 	std::vector<T> get_value(Node* node, Container key, int d = 0);
+	bool remove_value(Node* &node, Container key, int d = 0);
 
 public:
 	void put(Container key, T&& value);
 	void put(Container key, T& value);
 	std::vector<T> get_value(Container key);
+	void remove_value(Container key);
 };
 
 
@@ -31,11 +33,23 @@ struct RwayTrie<T, R, Container>::Node
 	std::vector<bool> deletable = { false };
 	std::vector<T*> value = { nullptr };
 	Node* next[R] = { nullptr }; //Array of pointers to next nodes
+	
+	bool no_next();
 
 	~Node();
 };
 
 
+template <typename T, size_t R, typename Container>
+bool RwayTrie<T, R, Container>::Node::no_next()
+{
+	for (auto t : this->next)
+	{
+		if (t != nullptr)
+			return false;
+	}
+	return true;
+}
 
 template <typename T, size_t R, typename Container>
 RwayTrie<T, R, Container>::Node::~Node()
@@ -109,6 +123,61 @@ std::vector<T> RwayTrie<T, R, Container>::get_value(Node* node, Container key, i
 }
 
 template <typename T, size_t R, typename Container>
+bool RwayTrie<T, R, Container>::remove_value(Node* &node, Container key, int d)
+{
+	if (d == key.size())
+	{
+		if (!(node && node->value.size() != 1))
+		{
+			return true;
+		}
+		else
+		{
+			if (node->no_next())
+			{
+				node->~Node();
+				node = nullptr;
+				return false;
+			}
+			else
+			{
+				for (unsigned int i = node->value.size() - 1; i >= 1 ; i--)
+					if (node->deletable[i])
+					{
+						delete node->value[i];
+						node->value.pop_back();
+						node->deletable.pop_back();
+					}
+
+				return true;
+			}
+		}
+	}
+
+	if (!node)
+	{
+		std::cout << "Key doesn't exist!" << std::endl;
+		return true;
+	}
+
+	int c = get_node(d, key);
+	bool removing_complete = remove_value(node->next[c], key, d + 1);
+
+	if (removing_complete)
+		return true;
+
+	if (node->value.size() == 1 && node->no_next())
+	{
+		node->~Node();
+		node = nullptr;
+		return false;
+	}
+	else
+		return true;
+
+}
+
+template <typename T, size_t R, typename Container>
 void RwayTrie<T, R, Container>::put(Container key, T&& value)	//User call function (rvalue)
 {
 	Node* temp_ptr = this->root.get();
@@ -127,4 +196,11 @@ std::vector<T> RwayTrie<T, R, Container>::get_value(Container key)
 {
 	Node* temp_ptr = this->root.get();
 	return get_value(temp_ptr, key);
+}
+
+template <typename T, size_t R, typename Container>
+void RwayTrie<T, R, Container>::remove_value(Container key)
+{
+	Node* temp_ptr = this->root.get();
+	remove_value(temp_ptr, key);
 }
